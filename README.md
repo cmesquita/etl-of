@@ -3,6 +3,7 @@
 Esse repositório contém as etapas de extração, transformação e carga dos dados do ciclo de vida do processo de order fulfillment na john deere.
 <br>
 O repositório possui a seguinte estrutura de arquivos.
+
 ```
 configs
    |-- config.json
@@ -25,5 +26,5 @@ Diretório contendo o notebook com as etapas de extração, transformação e ca
 Diretório contendo as funções de transformação do ETL.
 <br>
 ## Modo de usar
-O script de ETL está adaptado para ser utilizado com o recurso repos do databricks. 
+O script de ETL está adaptado para ser utilizado com o recurso repos do databricks. <br>
 Clique [aqui](https://docs.databricks.com/repos/index.html) para ter acesso a documentação que possui informações de como clonar um repositório no gitgub a partir do databricks.
