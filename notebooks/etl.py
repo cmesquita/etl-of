@@ -17,6 +17,8 @@
 from monitoring.listener import MyListener
 from utils.transformation import checkCondition, substringCondition
 
+# COMMAND ----------
+
 # MAGIC %md
 # MAGIC #### Monitoring
 
