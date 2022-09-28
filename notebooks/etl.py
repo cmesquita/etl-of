@@ -13,14 +13,12 @@
 # MAGIC #### Importing libraries
 
 # COMMAND ----------
+
 from monitoring.listener import MyListener
 from utils.transformation import checkCondition, substringCondition
-from configs.config import getConfig
 
 my_listener = MyListener()
 spark.streams.addListener(my_listener)
-comar_order = getConfig("comar_order")
-importacao = getConfig("importacao")
 
 # COMMAND ----------
 
@@ -30,7 +28,7 @@ importacao = getConfig("importacao")
 # COMMAND ----------
 
 sales_stream = spark.readStream.format("delta") \
-                 .option("maxFilesPerTrigger", 1) \
+                 .option("maxFilesPerTrigger", 5) \
                  .table("sales")
 
 # COMMAND ----------
@@ -41,8 +39,8 @@ sales_stream = spark.readStream.format("delta") \
 # COMMAND ----------
 
 sales_stream_filtered = sales_stream.select(['doc_id','doc_type','purchase_order_no']) \
-                        			.withColumn("comar_code",        checkCondition("doc_type", "purchase_order_no",comar_order)) \
-                                    .withColumn("doc_id",            substringCondition("doc_type","doc_id",importacao))
+                        			.withColumn("comar_code",        checkCondition("doc_type", "purchase_order_no")) \
+                                    .withColumn("doc_id",            substringCondition("doc_type","doc_id"))
 
 # COMMAND ----------
 
@@ -59,6 +57,7 @@ sales_stream_antijoin = sales_stream.join(sales_hist_df,  sales_stream.doc_id ==
 sales_stream_filtered.writeStream \
     .option("checkpointLocation", "/tmp/sales_stream_filtered") \
     .queryName("sales_stream_filtered") \
+    .trigger(processingTime='10 seconds') \
     .toTable("sales_stream_filtered") 
 
 # COMMAND ----------
@@ -67,8 +66,9 @@ sales_stream_filtered.writeStream \
 # MAGIC #### Data Quality
 
 # COMMAND ----------
-    
+        
 sales_stream_antijoin.writeStream \
     .option("checkpointLocation", "/tmp/sales_stream_antijoin") \
     .queryName("sales_stream_antijoin") \
+    .trigger(processingTime='30 seconds') \
     .toTable("sales_stream_antijoin") 
