@@ -17,6 +17,11 @@
 from monitoring.listener import MyListener
 from utils.transformation import checkCondition, substringCondition
 
+# MAGIC %md
+# MAGIC #### Monitoring
+
+# COMMAND ----------
+
 my_listener = MyListener()
 spark.streams.addListener(my_listener)
 
