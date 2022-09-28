@@ -10,6 +10,19 @@
 # COMMAND ----------
 
 # MAGIC %md
+# MAGIC #### Importing libraries
+
+# COMMAND ----------
+from monitoing.listener import MyListener
+from utils.transformation import checkCondition, substringCondition
+
+my_listener = MyListener()
+spark.streams.removeListener(my_listener)
+spark.streams.addListener(my_listener)
+
+# COMMAND ----------
+
+# MAGIC %md
 # MAGIC #### Extract 
 
 # COMMAND ----------
@@ -17,6 +30,8 @@
 sales_stream = spark.readStream.format("delta") \
                  .option("maxFilesPerTrigger", 1) \
                  .table("sales")
+
+# COMMAND ----------
 
 # MAGIC %md
 # MAGIC #### Transform 
@@ -32,6 +47,7 @@ sales_stream_filtered = sales_stream.select(['doc_id','doc_type','purchase_order
 sales_hist_df = spark.read.format('delta').table('sales_hist') 
 sales_stream_antijoin = sales_stream.join(sales_hist_df,  sales_stream.doc_id == sales_hist_df.doc_id ,'leftanti')
 
+# COMMAND ----------
 
 # MAGIC %md
 # MAGIC #### Load
@@ -43,6 +59,7 @@ sales_stream_filtered.writeStream \
     .queryName("sales_stream_filtered") \
     .toTable("sales_stream_filtered") 
 
+# COMMAND ----------
 
 # MAGIC %md
 # MAGIC #### Data Quality
